@@ -4,14 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.hshnordbank</groupId>
-    <artifactId>web3-java</artifactId>
+    <artifactId>web3-java-example</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.assertj>3.6.0</version.assertj>
+        <version.assertj>3.6.2</version.assertj>
         <version.java>1.8</version.java>
         <version.junit>4.12</version.junit>
-        <version.web3j>1.1.1</version.web3j>
+        <version.web3j>2.1.0</version.web3j>
+        <version.build-helper-maven-plugin>3.0.0</version.build-helper-maven-plugin>
+        <version.exec-maven-plugin>1.6.0</version.exec-maven-plugin>
     </properties>
     <dependencies>
         <dependency>
@@ -48,6 +50,68 @@
                         <arg>-Werror</arg>
                     </compilerArgs>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>${version.build-helper-maven-plugin}</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/src-gen/main/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${version.exec-maven-plugin}</version>
+                <executions>
+                    <execution>
+                        <id>generate-ssd</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>org.web3j.codegen.SolidityFunctionWrapperGenerator</mainClass>
+                            <arguments>
+                                <argument>contracts/compiled/SSD.bin</argument>
+                                <argument>contracts/compiled/SSD.abi</argument>
+                                <argument>-o</argument>
+                                <argument>src-gen/main/java</argument>
+                                <argument>-p</argument>
+                                <argument>com.hshnordbank.ssd.wrapper</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-ssd-registry</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>org.web3j.codegen.SolidityFunctionWrapperGenerator</mainClass>
+                            <arguments>
+                                <argument>contracts/compiled/SSDRegistry.bin</argument>
+                                <argument>contracts/compiled/SSDRegistry.abi</argument>
+                                <argument>-o</argument>
+                                <argument>src-gen/main/java</argument>
+                                <argument>-p</argument>
+                                <argument>com.hshnordbank.ssd.wrapper</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
